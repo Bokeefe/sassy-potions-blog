@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sassy Potions Blog</title>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+	<style>
+	body {
+		margin-left: 15%;
+		margin-right: 15%;
+		border-style: solid;
+	}
+
+	body>div {
+		border-style: dotted;
+		margin-left: 20%
+		width: 80%;
+	}
+	</style>
+</head>
+<body>
+	<div id="sassy-template" style="display:none">
+		Name: <input type="text" class="potion-name">
+		Crystals: <input type="checkbox" class="potion-crystals">
+		Sass: <input type="number" class="potion-sass">
+		GPA: <span class="potion-gpa"></span>
+		Ingredients:
+		 <textarea class="potion-ingredients"></textarea><br>
+			<div>
+		<input type="text" class="potion-ingredient">
+		<input type="number" class="potion-ingredient-quantity">
+		<button> delete </button>
+	</div>
+	<button> Add Ingredient </button>
+
+		<button class="edit-potion">Edit</button>
+	</div>
+	<div id="sassy-potions"></div>
+	<div id="create-new-potion">
+		Name: <input type="text" id="new-potion-name">
+		Sass: <input type="number" min="1" id="new-potion-sass">
+		
+		<button id="add-ingredient"> Add Ingredient </button>
+		<button id="submit-new-potion">SASS!</button>
+		Ingredients: 
+		<div id="ingredients-div">
+			Ingredient Name:<input type="text" class="new-potion-ingredients">
+			Ingredient QTY:<input type="number" class="new-potion-ingredient-quantity">
+			<button> delete </button>
+		</div>
+	</div>
+	<script>
+	/* jshint esversion:6 */
+		function handleEditClick(evt) {
+			var target = $(evt.target);
+			$.post('/api/potion/edit', {
+				_id : target.siblings(".potion-id").val(),
+				name: target.siblings(".potion-name").val(),
+				sass: target.siblings(".potion-sass").val(),
+				ingredients: target.siblings(".potion-ingredients").val(),
+				crystals: target.siblings(".potion-crystals").prop("checked")
+				
+			}, function (response) {
+				target.siblings(".potion-name").val(response.name);
+				target.siblings(".potion-sass").val(response.sass);
+				target.siblings(".potion-gpa").text(response.gpa);
+				target.siblings(".potion-ingredients").val(response.ingredients);
+				target.siblings(".potion-crystals").prop("checked", response.crystals);
+				target.siblings(".potion-comments").val(response.comments);
+			});
+		}
+
+		function createSassyDiv(potion) {
+			var newDiv = $('#sassy-template').clone();
+			newDiv.removeAttr("id");
+			newDiv.find(".potion-id").val(potion._id);
+			newDiv.find(".potion-name").val(potion.name);
+			newDiv.find(".potion-sass").val(potion.sass);
+			newDiv.find(".potion-gpa").text(potion.gpa);
+			newDiv.find(".potion-crystals").prop("checked", potion.crystals);
+			newDiv.find(".potion-ingredients").val(potion.ingredients.join(","));
+			newDiv.show();
+			return newDiv;
+		}
+		function createIngredientsCopy (){
+			var newDiv = $('#ingredients-div').clone();
+			newDiv.removeAttr("id");
+			newDiv.find(".new-potion-ingredients").val("");
+			newDiv.find(".new-potion-ingredient-quantity").val("");
+			$('#create-new-potion').append(newDiv);
+			//delete
+		}
+
+		$('#add-ingredient').click(createIngredientsCopy);
+
+		function loadAllPotions() {
+			$.get('/api/potions', (response) => {
+				for(var potion of response) {
+					$('#sassy-potions').append(createSassyDiv(potion));
+				}
+				$('.edit-potion').click(handleEditClick);
+			});
+		}
+		loadAllPotions();
+		
+
+
+		function sendNewPotion() {
+			var ingredients = [];
+			var quantities = [];
+			var ingArr = [];
+			$('.new-potion-ingredients').each(function(){
+				ingredients.push($(this).val());
+			});
+		
+			$('.new-potion-ingredient-quantity').each(function(){
+				quantities.push($(this).val());
+			});
+
+			// for(var i = 0; i < ingredients.length; i++) {
+			// 	ingArr.push(ingredients[i]);
+			// 	ingArr.push(quantities[i]);
+			// }
+
+			$.post('/api/potion', {
+				name: $('#new-potion-name').val(),
+				ingredients: ingredients,
+				quantity: quantities,
+				sass: $('#new-potion-sass').val(),
+
+			}, function(response) {
+				var div = createSassyDiv(response);
+				$('#sassy-potions').append(div);
+				div.find('.edit-potion').click(handleEditClick);
+			});
+		}
+
+		$('#submit-new-potion').click(sendNewPotion);
+
+	</script>
+</body>
+</html>
