@@ -26,7 +26,8 @@
 		Sass: <input type="number" class="potion-sass">
 		GPA: <span class="potion-gpa"></span>
 		Ingredients:
-		 <textarea class="potion-display"></textarea><br>
+		<textarea class="potion-display"></textarea><br>
+		<textarea class="quant-display"></textarea><br>
 	<div>
 		<input type="text" class="potion-ingredient-edit">
 		<input type="number" class="potion-ingredient-quantity-edit">
@@ -60,14 +61,15 @@
 				_id : target.siblings(".potion-id").val(),
 				name: target.siblings(".potion-name").val(),
 				sass: target.siblings(".potion-sass").val(),
-				ingredients: target.siblings(".potion-ingredient").val(),
+				ingredients: target.siblings(".new-potion-ingredient").val(),
 				crystals: target.siblings(".potion-crystals").prop("checked")
 				
 			}, function (response) {
 				target.siblings(".potion-name").val(response.name);
 				target.siblings(".potion-sass").val(response.sass);
 				target.siblings(".potion-gpa").text(response.gpa);
-				target.siblings(".potion-display").val(response.ingredients);
+				target.siblings(".potion-display").val(response.ingArr);
+				target.siblings(".quant-display").val(response.quantity);
 				target.siblings(".potion-crystals").prop("checked", response.crystals);
 			});
 		}
@@ -81,6 +83,7 @@
 			newDiv.find(".potion-gpa").text(potion.gpa);
 			newDiv.find(".potion-crystals").prop("checked", potion.crystals);
 			newDiv.find(".potion-display").val(potion.ingredients);
+			newDiv.find(".quant-display").val(potion.quantity);
 			newDiv.show();
 			return newDiv;
 		}
@@ -109,18 +112,18 @@
 		function sendNewPotion() {
 			var ingArr = [];
 			var quantArr = [];
-			$('.new-potion-ingredients').each(function(){
-				ingredients.push($(this).val());
+			$('.new-potion-ingredient').each(function(){
+				ingArr.push($(this).val());
 			});
 		
 			$('.new-potion-ingredient-quantity').each(function(){
-				quantities.push($(this).val());
+				quantArr.push($(this).val());
 			});
 
 			$.post('/api/potion', {
 				name: $('#new-potion-name').val(),
-				ingredients: ingArr,
-				quantity: quantArr,
+				ingredients: console.log(ingArr),
+				quantity: console.log(quantArr),
 				sass: $('#new-potion-sass').val(),
 
 			}, function(response) {
