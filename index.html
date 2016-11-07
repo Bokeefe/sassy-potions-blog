@@ -27,7 +27,6 @@
 		GPA: <span class="potion-gpa"></span>
 		Ingredients:
 		<textarea class="potion-display"></textarea><br>
-		<textarea class="quant-display"></textarea><br>
 	<div>
 		<input type="text" class="potion-ingredient-edit">
 		<input type="number" class="potion-ingredient-quantity-edit">
@@ -68,8 +67,7 @@
 				target.siblings(".potion-name").val(response.name);
 				target.siblings(".potion-sass").val(response.sass);
 				target.siblings(".potion-gpa").text(response.gpa);
-				target.siblings(".potion-display").val(response.ingArr);
-				target.siblings(".quant-display").val(response.quantity);
+				target.siblings(".potion-display").val(response.ingredients);
 				target.siblings(".potion-crystals").prop("checked", response.crystals);
 			});
 		}
@@ -83,7 +81,6 @@
 			newDiv.find(".potion-gpa").text(potion.gpa);
 			newDiv.find(".potion-crystals").prop("checked", potion.crystals);
 			newDiv.find(".potion-display").val(potion.ingredients);
-			newDiv.find(".quant-display").val(potion.quantity);
 			newDiv.show();
 			return newDiv;
 		}
@@ -112,6 +109,8 @@
 		function sendNewPotion() {
 			var ingArr = [];
 			var quantArr = [];
+			var comboArr = {};
+
 			$('.new-potion-ingredient').each(function(){
 				ingArr.push($(this).val());
 			});
@@ -120,10 +119,14 @@
 				quantArr.push($(this).val());
 			});
 
+			$.each(quantArr,function(i,val){
+  			comboArr[ingArr[i]] = val;
+			});
+
 			$.post('/api/potion', {
 				name: $('#new-potion-name').val(),
-				ingredients: console.log(ingArr),
-				quantity: console.log(quantArr),
+				ingredients: comboArr,
+				quantity: console.log(comboArr),
 				sass: $('#new-potion-sass').val(),
 
 			}, function(response) {
@@ -132,7 +135,6 @@
 				div.find('.edit-potion').click(handleEditClick);
 			});
 		}
-
 		$('#submit-new-potion').click(sendNewPotion);
 
 	</script>

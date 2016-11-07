@@ -2,7 +2,7 @@ module.exports = function(mongoose, SassyComment) {
 
 	var SassyPotionSchema = new mongoose.Schema({
 		sass: Number,
-		ingredients: [String],
+		ingredients: Object,
 		crystals: Boolean,
 		name: String,
 		gpa: Number,
