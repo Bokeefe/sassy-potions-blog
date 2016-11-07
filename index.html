@@ -80,7 +80,12 @@
 			newDiv.find(".potion-sass").val(potion.sass);
 			newDiv.find(".potion-gpa").text(potion.gpa);
 			newDiv.find(".potion-crystals").prop("checked", potion.crystals);
-			newDiv.find(".potion-display").val(potion.ingredients);
+			// function pull (arr){ 
+			// 	for(var i in arr){
+			// 	console.log(JSON.stringify(arr[i]));
+			// 	}
+			// }
+			newDiv.find(".potion-display").val(JSON.stringify(potion.ingredients));
 			newDiv.show();
 			return newDiv;
 		}
@@ -122,11 +127,10 @@
 			$.each(quantArr,function(i,val){
   			comboArr[ingArr[i]] = val;
 			});
-
+ 			console.log(comboArr);
 			$.post('/api/potion', {
 				name: $('#new-potion-name').val(),
-				ingredients: comboArr,
-				quantity: console.log(comboArr),
+				ingredients: JSON.stringify(comboArr),
 				sass: $('#new-potion-sass').val(),
 
 			}, function(response) {
@@ -135,6 +139,7 @@
 				div.find('.edit-potion').click(handleEditClick);
 			});
 		}
+
 		$('#submit-new-potion').click(sendNewPotion);
 
 	</script>

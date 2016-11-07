@@ -40,9 +40,10 @@ app.get("/api/potions", (req, res) => {
 // POST /api/potions
 app.post("/api/potion", (req, res) => {
 	//todo validate input
+	console.log(req.body);
 	var newPotion = new SassyPotion({
 		sass: req.body.sass,
-		ingredients: req.body.comboArr,
+		ingredients: JSON.parse(req.body.ingredients),
 		crystals: Math.random() > 0.5,
 		name: req.body.name,
 		gpa: 100 - req.body.sass,
